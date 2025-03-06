@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Member List</title>
+
+<style>
+	ul > li {
+		display: inline-block;
+		border: 1px solid;
+		padding: 10px;
+	}
+	
+	ul {
+		margin-left: -50px;
+	}
+</style>
+
+</head>
+<body>
+
+	<div>
+		<h2>Member List</h2>
+		<p><a href="/">Main</a>현재 <span th:text="${members.totalElements}" style="font-weight: bold">10</span>명의 회원정보가 등록되었습니다.</p>
+		
+		<!--검색 form 시작부분-->
+		<!--<form style="padding: 10px; border: 0px solid; width: 710px; display: flex; justify-content: flex-end;"
+		      th:action="@{/jpa/memberList}" method="GET">
+			<label for="searchKeyword">이름</label>
+			<select name="searchCategory">
+				<option value="name">Name</option>
+				<option value="id">ID</option>
+				<option value="phone">phone</option>
+			</select>
+			&nbsp;
+			<input type="text" id="searchKeyword" name="searchKeyword">
+			<button type="submit">Search</button>
+		</form>-->
+		<!--검색 form 끝나는 부분-->
+		<!--<form style="padding: 10px; border: 0px solid; width: 710px; display: flex; justify-content: flex-end;"
+				    th:action="@{/jpa/memberList}" method="GET">
+			<input type="hidden" name="searchCategory" value="phone">		
+			<label for="searchKeyword">LIKE 검색 (Phone 필드에서)</label> &nbsp;		
+			<input type="text" id="searchKeyword" name="searchKeyword" placeholder="Phone 번호검색">
+			<button type="submit">Search</button>
+		</form>-->
+		<!--<form style="padding: 10px; border: 0px solid; width: 710px; display: flex; justify-content: flex-end;"
+				    th:action="@{/jpa/memberList}" method="GET">
+			<input type="text" name="searchCategory" id="searchCategory" placeholder="Name 입력">	&nbsp;			
+			<input type="text" id="searchKeyword" name="searchKeyword" placeholder="ID 입력">
+			<button type="submit">Search</button>
+		</form>-->
+		<!-- <form style="padding: 10px; border: 0px solid; width: 710px; display: flex; justify-content: flex-end;"
+				    th:action="@{/jpa/memberList}" method="GET">
+					Name or ID 검색 &nbsp;			
+			<input type="text" id="searchKeyword" name="searchKeyword" placeholder="ID 입력" autocomplete="off">
+			&nbsp;
+			<button type="submit">Search</button>
+		</form> -->
+		
+		<form style="padding: 10px; border: 0px solid; width: 710px; display: flex; justify-content: flex-end;"
+				    th:action="@{/jpa/memberList}" method="GET">
+					Name or ID or Phone 검색 &nbsp;		
+					
+						
+			<input type="text" id="searchKeyword" name="searchKeyword" autocomplete="off">
+			
+			&nbsp;
+			<button type="submit">Search</button>
+		</form>
+		
+		<table cellpadding=10 border=1>
+			<thead>
+				<tr>
+					<th width="50">#</th>
+					<th>Name</th>
+					<th>ID</th>
+					<th>Phone</th>
+					<th>Age</th>
+					<th>Edit</th>
+					<th>Del</th>
+					<th>Del</th>
+					
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="member : ${members}">
+					<th th:text="${member.num}">1</th>
+					<th><a th:href="@{/jpa/memberDetail(num=${member.num})}" th:text="${member.name}">
+						홍길동</a></th>
+					<th th:text="${member.id}">mr.hong</th>
+					<th th:text="${member.phone}">010-123-5678</th>
+					<th th:text="${member.age}">11</th>
+					<th><a th:href="@{/jpa/memberWriteForm(num=${member.num})}">수정</a></th> <!--num 값을
+					넘겨줘야 PK를 참고해서 뭘 수정할지 알 수 있으니 저렇게 지정해주면 된다. 위에 th:each="member : ${members}
+				 등을 잘 기억해둬야 할것이다.-->
+					<th><a th:href="@{/jpa/memberDelete( num=${member.num} )}">삭제(바로삭제)</a></th> <!--num 값 삭제처리 할때도
+						 넘겨줘야 뭘 삭제할지 알도록 PK를 넘겨준다고 생각하면 됨.-->
+						 
+						 
+					<th><a href="#none" th:onclick="btnDel([[${member.num}]])" style="color: #ff0000">삭제(확인 후 삭제)
+					</a></th>
+					
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<p>
+		총 레코드 갯수 <span style="color: red; font-weight: bold;" th:text="${members.totalElements}">4</span>
+		 &nbsp;&nbsp;&nbsp;
+		현재 페이지 <span style="color: green; font-weight: bold;" th:text="${members.pageable.pageNumber + 1}">1</span> /
+		총 페이지 <span style="color: blue; font-weight: bold;" th:text="${members.totalPages}">5</span>
+	</p>
+	
+	<ul>
+		<li>
+			<th:block th:if="${ members.pageable.pageNumber + 1 == 1 }">
+				<span style="color: #999">Previous</span>
+			</th:block>
+			<th:block th:unless="${ members.pageable.pageNumber + 1 == 1 }">
+				<a href="#" th:href="@{/jpa/memberList( page=${members.pageable.pageNumber - 1} ,
+				searchKeyword=${searchKeyword} )}">Previous</a>
+			</th:block>
+			
+		</li>
+		<li>/</li>
+		<li>
+			<th:block th:if="${ members.totalPages == members.number+1 }">
+				<span style="color: #999">Next</span>
+			</th:block>
+			<th:block th:unless="${ members.totalPages == members.number+1 }">
+				<a href="#" th:href="@{ /jpa/memberList( page=${members.number + 1},
+				 searchKeyword=${searchKeyword} ) }">Next</a>
+			</th:block>
+		</li>
+	</ul>
+	
+	<script>
+		function btnDel(num) {
+			if(confirm("회원을 정말 삭제하시겠습니까?") == true) {
+				location.href = '/jpa/memberDelete?num=' + num;
+			} else {
+				return;
+			}
+		}
+	</script>
+	
+</body>
+</html>
