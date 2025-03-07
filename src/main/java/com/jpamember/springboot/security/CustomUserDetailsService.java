@@ -4,14 +4,14 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-@RequiredArgsConstructor
 // UserDetailsService는 spring security에서 제공하는 인터페이스임.
 public class CustomUserDetailsService implements UserDetailsService {
 	
@@ -31,12 +31,21 @@ public class CustomUserDetailsService implements UserDetailsService {
 //		User class는 UserDetails의 구현체, 제공되는 애임.
 		UserDetails userDetails = User.builder()
 //				사용자의 id를 spring security에서는 username이라는 것을 이용함. 
-				.username("user1")
-				.password("1111")
+				.username("user1@naver.com")
+//				passwordEncoder.encode() -> 비밀번호 암호화, No white label error
+				.password(passwordEncoder.encode("1111"))
 				.authorities("ROLE_USER")
 				.build();
 		
 		return userDetails;
+	}
+	
+	
+//	빈 객체 사용.
+	private PasswordEncoder passwordEncoder;
+	
+	public CustomUserDetailsService() {
+		this.passwordEncoder = new BCryptPasswordEncoder();
 	}
 
 }

@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,11 @@ public class JpaController {
 	@Autowired
 	private MemberRepository memberRepository;
 
+	/*
+	 * @PreAuthorize("hasRole('USER')")는 USER라는 권한을 가진 로그인 정보를 인가함. USER가 아니면,
+	 * password를 검증 하지 않는다.
+	 */
+	@PreAuthorize("hasRole('USER')")
 	@GetMapping("/jpa/memberWriteForm")
 	public String memberWriteForm(@RequestParam(value = "num", required = false) Integer num, // CRUD U를 하기 위해서 Model쪽에서
 																								// num이라는 애를 1 증가한게 아닌
@@ -352,6 +358,7 @@ public class JpaController {
 	 
 
 	// 회원삭제
+	@PreAuthorize("hasRole('USER')")
 	@GetMapping(value = "/jpa/memberDelete")
 	public String memberDelete(@RequestParam(value = "num", required = false) Integer num) {
 		// 삭제처리시 DB에 있는 애를 가져와서 삭제 하는것이고, memberList.html에 삭제 버튼을 눌러서 삭제가 되는거라, form하곤
@@ -367,6 +374,7 @@ public class JpaController {
 	}
 
 	// 회원 상세 페이지 paging
+	@PreAuthorize("hasRole('USER')")
 	@GetMapping("/jpa/memberDetail")
 	public String memberDetail(@RequestParam(value = "num", required = false) Integer num, Model model) {
 
